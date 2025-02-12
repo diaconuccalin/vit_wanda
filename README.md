@@ -27,11 +27,6 @@ Their project is released under the MIT license.
 Adapted from the [solution](https://github.com/locuslab/wanda) offered by the authors, which is built on
 the [dropout](https://github.com/facebookresearch/dropout) repository.
 
-## Download Weights
-
-Run the script [download_weights.sh](download_weights.sh) to download pretrained weights for ConvNeXt-B, DeiT-B and
-ViT-B, which we used in the paper.
-
 ## Usage
 
 Here is the command for pruning ConvNeXt/ViT models:

@@ -381,7 +381,7 @@ def get_args():
     )
 
     # Arguments for pruning
-    parser.add_argument("--nsamples", type=int, default=4096)
+    parser.add_argument("--n_samples", type=int, default=4096)
     parser.add_argument("--sparsity", type=float, default=0.0)
     parser.add_argument("--prune_metric", type=str, choices=["magnitude", "wanda"])
     parser.add_argument("--prune_granularity", type=str)
