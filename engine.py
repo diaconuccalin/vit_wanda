@@ -6,7 +6,7 @@ import torch.nn as nn
 from timm.data import Mixup
 from timm.utils import accuracy, ModelEma
 
-from image_classifiers.utils import utils
+from utils import utils
 
 
 def train_one_epoch(
