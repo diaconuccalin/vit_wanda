@@ -1,10 +1,3 @@
-# Copyright (c) Meta Platforms, Inc. and affiliates.
-
-# All rights reserved.
-
-# This source code is licensed under the license found in the
-# LICENSE file in the root directory of this source tree.
-
 import datetime
 import math
 import os
@@ -137,9 +130,9 @@ class MetricLogger(object):
             "data: {data}",
         ]
         if torch.cuda.is_available():
-            log_msg.append("max mem: {memory:.0f}")
+            log_msg.append("max mem: {memory:.0f} MB")
         log_msg = self.delimiter.join(log_msg)
-        MB = 1024.0 * 1024.0
+        mb = 1024.0 * 1024.0
         for obj in iterable:
             data_time.update(time.time() - end)
             yield obj
@@ -156,7 +149,7 @@ class MetricLogger(object):
                             meters=str(self),
                             time=str(iter_time),
                             data=str(data_time),
-                            memory=torch.cuda.max_memory_allocated() / MB,
+                            memory=torch.cuda.max_memory_allocated() / mb,
                         )
                     )
                 else:
@@ -443,7 +436,7 @@ class NativeScalerWithGradNormCount:
         self._scaler.scale(loss).backward(create_graph=create_graph)
 
         ########################################################
-        ## Code I added
+        # Code I added
         for param in parameters:
             weight_copy = param.data.abs().clone()
             mask = weight_copy.gt(0).float().cuda()
@@ -458,7 +451,7 @@ class NativeScalerWithGradNormCount:
                 assert parameters is not None
                 self._scaler.unscale_(
                     optimizer
-                )  # unscale the gradients of optimizer's assigned params in-place
+                )  # unscale the gradients of the optimizer's assigned params in-place
                 norm = torch.nn.utils.clip_grad_norm_(parameters, clip_grad)
             else:
                 self._scaler.unscale_(optimizer)
