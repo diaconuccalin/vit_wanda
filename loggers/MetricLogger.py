@@ -102,6 +102,7 @@ class MetricLogger(object):
                             memory=torch.cuda.max_memory_allocated() / mb,
                         )
                     )
+                    torch.cuda.reset_peak_memory_stats()
                 else:
                     print(
                         log_msg.format(

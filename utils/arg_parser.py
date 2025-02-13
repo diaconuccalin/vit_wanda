@@ -23,12 +23,11 @@ def get_args():
     """
 
     parser = argparse.ArgumentParser(
-        "Wanda applied on image classification transformer models.",
+        "Wanda applied on vit-based models.",
     )
 
-    # Training parameters
+    # Training and evaluation parameters
     parser.add_argument("--batch_size", default=1, type=int, help="Per GPU batch size")
-    parser.add_argument("--epochs", default=300, type=int)
     parser.add_argument(
         "--update_freq", default=1, type=int, help="gradient accumulation steps"
     )
@@ -36,18 +35,12 @@ def get_args():
     # Model parameters
     parser.add_argument(
         "--model",
-        default="convnext_tiny",
+        default="vit_base_patch16_224",
         type=str,
         metavar="MODEL",
         help="Name of model to train",
     )
     parser.add_argument("--input_size", default=224, type=int, help="image input size")
-    parser.add_argument(
-        "--layer_scale_init_value",
-        default=1e-6,
-        type=float,
-        help="Layer scale initial values",
-    )
 
     # Dropout and stochastic depth drop rate; set at most one to non-zero
     parser.add_argument(
@@ -65,38 +58,8 @@ def get_args():
         help="Drop path rate (default: 0.0)",
     )
 
-    # Early / late dropout and stochastic depth settings
-    parser.add_argument(
-        "--drop_mode",
-        type=str,
-        default="standard",
-        choices=["standard", "early", "late"],
-        help="drop mode",
-    )
-    parser.add_argument(
-        "--drop_schedule",
-        type=str,
-        default="constant",
-        choices=["constant", "linear"],
-        help="drop schedule for early dropout / s.d. only",
-    )
-    parser.add_argument(
-        "--cutoff_epoch",
-        type=int,
-        default=0,
-        help="if drop_mode is early / late, this is the epoch where dropout ends / starts",
-    )
-
     # EMA-related parameters
     parser.add_argument("--model_ema", type=str2bool, default=False)
-    parser.add_argument("--model_ema_decay", type=float, default=0.9999, help="")
-    parser.add_argument("--model_ema_force_cpu", type=str2bool, default=False, help="")
-    parser.add_argument(
-        "--model_ema_eval",
-        type=str2bool,
-        default=False,
-        help="Using ema to eval during training.",
-    )
 
     # Optimization parameters
     parser.add_argument(
@@ -138,14 +101,6 @@ def get_args():
     parser.add_argument(
         "--weight_decay", type=float, default=0.05, help="weight decay (default: 0.05)"
     )
-    parser.add_argument(
-        "--weight_decay_end",
-        type=float,
-        default=None,
-        help="""Final value of the
-        weight decay. We use a cosine schedule for WD and using a larger decay by
-        the end of training improves performance for ViTs.""",
-    )
 
     # Learning rate schedule parameters
     parser.add_argument(
@@ -155,27 +110,12 @@ def get_args():
         metavar="LR",
         help="learning rate (default: 4e-3), with total batch size 4096",
     )
-    parser.add_argument("--layer_decay", type=float, default=1.0)
     parser.add_argument(
         "--min_lr",
         type=float,
         default=1e-6,
         metavar="LR",
         help="lower lr bound for cyclic schedulers that hit 0 (1e-6)",
-    )
-    parser.add_argument(
-        "--warmup_epochs",
-        type=int,
-        default=50,
-        metavar="N",
-        help="epochs to warmup LR, if scheduler supports",
-    )
-    parser.add_argument(
-        "--warmup_steps",
-        type=int,
-        default=-1,
-        metavar="N",
-        help="num of steps to warmup LR, will overload warmup_epochs if set > 0",
     )
 
     # Augmentation parameters
@@ -263,26 +203,10 @@ def get_args():
         help='How to apply mixup/cutmix params. Per "batch", "pair", or "elem"',
     )
 
-    # Finetuning params
-    parser.add_argument("--finetune", default="", help="finetune from checkpoint")
-    parser.add_argument(
-        "--head_init_scale",
-        default=1.0,
-        type=float,
-        help="classifier head initial scale, typically adjusted in fine-tuning",
-    )
-    parser.add_argument(
-        "--model_key",
-        default="model|module",
-        type=str,
-        help="which key to load from saved state dict, usually model or model_ema",
-    )
-    parser.add_argument("--model_prefix", default="", type=str)
-
     # Dataset parameters
     parser.add_argument(
         "--data_path",
-        default="/datasets01/imagenet_full_size/061417/",
+        default="/mnt/d/datasets/ImageNet",
         type=str,
         help="dataset path",
     )
@@ -304,53 +228,16 @@ def get_args():
         help="ImageNet dataset path",
     )
     parser.add_argument(
-        "--output_dir", default="", help="path where to save, empty for no saving"
-    )
-    parser.add_argument(
         "--device", default="cuda", help="device to use for training / testing"
     )
-    parser.add_argument("--seed", default=0, type=int)
+    parser.add_argument("--seed", default=42, type=int)
 
     parser.add_argument("--resume", default="", help="resume from checkpoint")
-    parser.add_argument("--auto_resume", type=str2bool, default=True)
-    parser.add_argument("--save_ckpt", type=str2bool, default=True)
-    parser.add_argument("--save_ckpt_freq", default=1, type=int)
-    parser.add_argument("--save_ckpt_num", default=3, type=int)
-
-    parser.add_argument(
-        "--start_epoch", default=0, type=int, metavar="N", help="start epoch"
-    )
-    parser.add_argument(
-        "--eval", type=str2bool, default=False, help="Perform evaluation only"
-    )
-    parser.add_argument(
-        "--dist_eval",
-        type=str2bool,
-        default=True,
-        help="Enabling distributed evaluation",
-    )
-    parser.add_argument(
-        "--disable_eval",
-        type=str2bool,
-        default=False,
-        help="Disabling evaluation during training",
-    )
-    parser.add_argument("--num_workers", default=10, type=int)
     parser.add_argument(
         "--pin_mem",
         type=str2bool,
         default=True,
         help="Pin CPU memory in DataLoader for more efficient (sometimes) transfer to GPU.",
-    )
-
-    # Distributed training parameters
-    parser.add_argument(
-        "--world_size", default=1, type=int, help="number of distributed processes"
-    )
-    parser.add_argument("--local_rank", default=-1, type=int)
-    parser.add_argument("--dist_on_itp", type=str2bool, default=False)
-    parser.add_argument(
-        "--dist_url", default="env://", help="url used to set up distributed training"
     )
 
     parser.add_argument(
@@ -360,31 +247,10 @@ def get_args():
         help="Use PyTorch's AMP (Automatic Mixed Precision) or not",
     )
 
-    # Weights and Biases arguments
-    parser.add_argument(
-        "--enable_wandb",
-        type=str2bool,
-        default=False,
-        help="enable logging to Weights and Biases",
-    )
-    parser.add_argument(
-        "--project",
-        default="convnext",
-        type=str,
-        help="The name of the W&B project where you're sending the new run.",
-    )
-    parser.add_argument(
-        "--wandb_ckpt",
-        type=str2bool,
-        default=False,
-        help="Save model checkpoints as W&B Artifacts.",
-    )
-
     # Arguments for pruning
     parser.add_argument("--n_samples", type=int, default=4096)
     parser.add_argument("--sparsity", type=float, default=0.0)
     parser.add_argument("--prune_metric", type=str, choices=["magnitude", "wanda"])
-    parser.add_argument("--prune_granularity", type=str)
-    parser.add_argument("--blocksize", type=int, default=1)
+    parser.add_argument("--prune_granularity", type=str, choices=["layer", "row"])
 
     return parser.parse_args()
