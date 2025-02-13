@@ -1,4 +1,14 @@
+# Original
 /*__pycache__/
 .env
 *.pyc
 *.DS_Store
+
+# PyCharm
+.idea/
+
+# Others
+imagenet/
+llm_weights/
+model_weights/
+offload/
