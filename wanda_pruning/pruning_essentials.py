@@ -152,21 +152,25 @@ def prune_vit(model, calibration_data, pruning_metric, pruning_granularity, spar
     # Apply model's patch embedding on the calibration data
     calibration_data = model.patch_embed(calibration_data)
 
-    # Get model's cls_token
-    cls_tokens = model.cls_token.expand(batch_size, -1, -1)
+    if not isinstance(model, TinyViT):
+        # Get model's cls_token
+        cls_tokens = model.cls_token.expand(batch_size, -1, -1)
 
-    # Append cls_tokens to the calibration data
-    calibration_data = torch.cat((cls_tokens, calibration_data), dim=1)
+        # Append cls_tokens to the calibration data
+        calibration_data = torch.cat((cls_tokens, calibration_data), dim=1)
 
-    # Apply positional embedding and dropout
-    calibration_data = calibration_data + model.pos_embed
+        # Apply positional embedding and dropout
+        calibration_data = calibration_data + model.pos_embed
 
-    # Apply dropout
-    calibration_data = model.pos_drop(calibration_data)
+        # Apply dropout
+        calibration_data = model.pos_drop(calibration_data)
 
     # Iterate through the transformer blocks
     for block_id, blk in enumerate(
-        tqdm(model.blocks, desc="Pruning transformer blocks")
+        tqdm(
+            model.layers if isinstance(model, TinyViT) else model.blocks,
+            desc="Pruning transformer blocks",
+        )
     ):
         wrapped_layers = None
 
