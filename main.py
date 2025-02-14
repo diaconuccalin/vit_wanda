@@ -164,7 +164,7 @@ def main():
                 )
 
                 # Write results to file
-                with open("pruning_results.txt", "a") as f:
+                with open(args.model + "_pruning_results.txt", "a") as f:
                     f.write(
                         f"Pruning metric: {pruning_metric}, "
                         f"Pruning granularity: {pruning_granularity}, "
