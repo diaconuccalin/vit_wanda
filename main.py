@@ -58,7 +58,7 @@ def main():
 
         # Update root path in dataset object
         old_root = dataset_train.root[:-5]
-        dataset_train.root = args.new_data_root
+        dataset_train.root = args.data_path
 
         for i in range(len(dataset_train.samples)):
             dataset_train.samples[i] = (
