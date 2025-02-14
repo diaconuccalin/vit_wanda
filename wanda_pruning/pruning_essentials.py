@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from tqdm import tqdm
 
+from models.tiny_vit.tiny_vit import TinyViT
 from wanda_pruning.WrappedLayer import WrappedLayer
 
 
@@ -138,7 +139,7 @@ def prune_vit(model, calibration_data, pruning_metric, pruning_granularity, spar
     metric_stats = []
 
     # Iterate through transformer blocks and store initial weights
-    for blk in model.blocks:
+    for blk in model.layers if isinstance(model, TinyViT) else model.blocks:
         # Select linear layers
         subset = find_layers(module=blk)
 

@@ -9,6 +9,7 @@ from tqdm import tqdm
 from datasets import build_dataset
 from evaluation.evaluation_pipeline import evaluate
 from models.model_utils import build_model
+from models.tiny_vit.tiny_vit import TinyViT
 from utils.arg_parser import get_args
 from wanda_pruning.pruning_essentials import prune_vit, check_sparsity
 
@@ -35,51 +36,52 @@ def main():
     # Prepare train dataset (used for calibration sampling)
     print("Preparing datasets...")
     # Generate new if not available
-    if args.train_data_loader_path is None:
-        # Prepare saving directory
-        if not os.path.exists("other_resources"):
-            os.mkdir("other_resources")
+    if sum(args.sparsities) > 0:
+        if args.train_data_loader_path is None:
+            # Prepare saving directory
+            if not os.path.exists("other_resources"):
+                os.mkdir("other_resources")
 
-        # Build dataset
-        dataset_train, args.nb_classes = build_dataset(is_train=True, args=args)
+            # Build dataset
+            dataset_train, args.nb_classes = build_dataset(is_train=True, args=args)
 
-        # Save dataset if required
-        if args.save_train_data_loader:
-            torch.save(dataset_train, "other_resources/dataset_train.loader")
+            # Save dataset if required
+            if args.save_train_data_loader:
+                torch.save(dataset_train, "other_resources/dataset_train.loader")
 
-        # Randomly select calibration data ids
-        calibration_ids = np.random.choice(len(dataset_train), args.n_samples)
+            # Randomly select calibration data ids
+            calibration_ids = np.random.choice(len(dataset_train), args.n_samples)
 
-        # Save calibration ids
-        np.save("other_resources/calib_ids", calibration_ids)
-    else:
-        # Load dataset
-        dataset_train = torch.load(args.train_data_loader_path, weights_only=False)
+            # Save calibration ids
+            np.save("other_resources/calib_ids", calibration_ids)
+        else:
+            # Load dataset
+            dataset_train = torch.load(args.train_data_loader_path, weights_only=False)
 
-        # Update root path in dataset object
-        old_root = dataset_train.root[:-5]
-        dataset_train.root = args.data_path
+            # Update root path in dataset object
+            old_root = dataset_train.root[:-5]
+            dataset_train.root = args.data_path
 
-        for i in range(len(dataset_train.samples)):
-            dataset_train.samples[i] = (
-                dataset_train.samples[i][0].replace(old_root, dataset_train.root),
-                dataset_train.samples[i][1],
-            )
+            for i in range(len(dataset_train.samples)):
+                dataset_train.samples[i] = (
+                    dataset_train.samples[i][0].replace(old_root, dataset_train.root),
+                    dataset_train.samples[i][1],
+                )
 
-            dataset_train.imgs[i] = (
-                dataset_train.imgs[i][0].replace(old_root, dataset_train.root),
-                dataset_train.imgs[i][1],
-            )
+                dataset_train.imgs[i] = (
+                    dataset_train.imgs[i][0].replace(old_root, dataset_train.root),
+                    dataset_train.imgs[i][1],
+                )
 
-        # Load calibration ids
-        calibration_ids = np.load(args.calibration_ids_path)
+            # Load calibration ids
+            calibration_ids = np.load(args.calibration_ids_path)
 
-    # Select calibration data
-    calib_data = []
-    for i in tqdm(calibration_ids, desc="Preparing calibration data"):
-        calib_data.append(dataset_train[i][0].unsqueeze(dim=0))
+        # Select calibration data
+        calib_data = []
+        for i in tqdm(calibration_ids, desc="Preparing calibration data"):
+            calib_data.append(dataset_train[i][0].unsqueeze(dim=0))
 
-    calib_data = torch.cat(calib_data, dim=0).to(device)
+        calib_data = torch.cat(calib_data, dim=0).to(device)
     print()
 
     # Prepare validation dataset (used for evaluation)
@@ -99,7 +101,26 @@ def main():
 
     # Prepare model
     print("Preparing model...")
-    model = build_model(args, pretrained=False)
+
+    if "tiny" not in args.model:
+        model = build_model(args, pretrained=False)
+    else:
+        model = TinyViT(
+            img_size=224,
+            in_chans=3,
+            num_classes=1000,
+            embed_dims=[64, 128, 160, 320],
+            depths=[2, 2, 6, 2],
+            num_heads=[2, 4, 5, 10],
+            window_sizes=[7, 7, 14, 7],
+            mlp_ratio=4.0,
+            drop_rate=0.0,
+            drop_path_rate=0.0,
+            use_checkpoint=False,
+            mbconv_expand_ratio=4.0,
+            local_conv_size=3,
+            layer_lr_decay=0.8,
+        )
     model.cuda()
 
     n_parameters = sum(p.numel() for p in model.parameters() if p.requires_grad)
@@ -107,7 +128,10 @@ def main():
 
     # Load model weights
     checkpoint = torch.load(args.resume, map_location="cpu")
-    model.load_state_dict(checkpoint)
+    if "model" in checkpoint:
+        model.load_state_dict(checkpoint["model"])
+    else:
+        model.load_state_dict(checkpoint)
 
     # Iterate through given options
     for pruning_metric in args.prune_metrics:
