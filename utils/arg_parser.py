@@ -253,4 +253,10 @@ def get_args():
     parser.add_argument("--prune_metric", type=str, choices=["magnitude", "wanda"])
     parser.add_argument("--prune_granularity", type=str, choices=["layer", "row"])
 
+    # Arguments for reloading training data loader and calibration set
+    parser.add_argument("--train_data_loader_path", type=str, default=None)
+    parser.add_argument("--save_train_data_loader", action="store_true", default=False)
+    parser.add_argument("--new_data_root", type=str, default=None)
+    parser.add_argument("--calibration_ids_path", type=str, default=None)
+
     return parser.parse_args()
