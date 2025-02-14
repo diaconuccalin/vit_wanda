@@ -109,27 +109,43 @@ def main():
     checkpoint = torch.load(args.resume, map_location="cpu")
     model.load_state_dict(checkpoint)
 
-    # Prune model
-    if args.sparsity != 0:
-        with torch.no_grad():
-            prune_vit(
-                model=model,
-                calibration_data=calib_data,
-                pruning_metric=args.prune_metric,
-                pruning_granularity=args.prune_granularity,
-                sparsity=args.sparsity,
-            )
+    # Iterate through given options
+    for pruning_metric in args.prune_metrics:
+        for pruning_granularity in args.prune_granularities:
+            for sparsity in args.sparsities:
+                # Prune model
+                if sparsity != 0:
+                    with torch.no_grad():
+                        prune_vit(
+                            model=model,
+                            calibration_data=calib_data,
+                            pruning_metric=pruning_metric,
+                            pruning_granularity=pruning_granularity,
+                            sparsity=sparsity,
+                        )
 
-    # Check sparsity
-    print("Checking sparsity...")
-    actual_sparsity = check_sparsity(model)
-    print(f"Actual sparsity: {actual_sparsity}.\n")
+                # Check sparsity
+                print("Checking sparsity...")
+                actual_sparsity = check_sparsity(model)
+                print(f"Actual sparsity: {actual_sparsity}.\n")
 
-    # Evaluate model
-    test_stats = evaluate(data_loader_val, model, device, use_amp=args.use_amp)
-    print(
-        f"\nAccuracy of the network on {len(dataset_val)} test images: {test_stats['acc1']:.5f}%"
-    )
+                # Evaluate model
+                test_stats = evaluate(
+                    data_loader_val, model, device, use_amp=args.use_amp
+                )
+                print(
+                    f"\nAccuracy of the network on {len(dataset_val)} test images: {test_stats['acc1']:.5f}%"
+                )
+
+                # Write results to file
+                with open("pruning_results.txt", "a") as f:
+                    f.write(
+                        f"Pruning metric: {pruning_metric}, "
+                        f"Pruning granularity: {pruning_granularity}, "
+                        f"Sparsity: {sparsity}, "
+                        f"Top 1 accuracy: {test_stats['acc1']:.5f}%, "
+                        f"Top 5 accuracy: {test_stats['acc5']:.5f}%\n"
+                    )
 
     return None
 

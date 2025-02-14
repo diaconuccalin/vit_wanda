@@ -249,9 +249,22 @@ def get_args():
 
     # Arguments for pruning
     parser.add_argument("--n_samples", type=int, default=4096)
-    parser.add_argument("--sparsity", type=float, default=0.0)
-    parser.add_argument("--prune_metric", type=str, choices=["magnitude", "wanda"])
-    parser.add_argument("--prune_granularity", type=str, choices=["layer", "row"])
+
+    parser.add_argument(
+        "--prune_metrics",
+        type=lambda arg: list(map(str, arg.split(","))),
+        help="Choose the pruning metrics, between weight magnitude and wanda.",
+    )
+
+    parser.add_argument(
+        "--prune_granularities",
+        type=lambda arg: list(map(str, arg.split(","))),
+        help="Choose the pruning structural granularities, between layer and row.",
+    )
+
+    parser.add_argument(
+        "--sparsities", type=lambda arg: list(map(float, arg.split(","))), default=0.0
+    )
 
     # Arguments for reloading training data loader and calibration set
     parser.add_argument("--train_data_loader_path", type=str, default=None)
