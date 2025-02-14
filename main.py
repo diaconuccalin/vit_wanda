@@ -112,7 +112,13 @@ def main():
     # Prune model
     if args.sparsity != 0:
         with torch.no_grad():
-            prune_vit(args, model, calib_data)
+            prune_vit(
+                model=model,
+                calibration_data=calib_data,
+                pruning_metric=args.prune_metric,
+                pruning_granularity=args.prune_granularity,
+                sparsity=args.sparsity,
+            )
 
     # Check sparsity
     print("Checking sparsity...")

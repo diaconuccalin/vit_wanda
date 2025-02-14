@@ -116,21 +116,23 @@ def compute_mask(w_metric, prune_granularity, sparsity):
         return w_mask
 
 
-def prune_vit(args, model, calibration_data):
+def prune_vit(model, calibration_data, pruning_metric, pruning_granularity, sparsity):
     """
     Function to perform pruning on a Vision Transformer model.
 
     Args:
-        args (argparse.Namespace): Arguments passed to the script.
         model (nn.Module): Vision Transformer model to prune.
         calibration_data (torch.Tensor): Calibration samples to use for pruning.
+        pruning_metric (str): Metric to use for pruning. Can be "magnitude" or "wanda".
+        pruning_granularity (str): Structure on which pruning will be applied. Can be "layer" or "row".
+        sparsity (float): Sparsity level to achieve.
     """
 
     # Obtain batch size
     batch_size = calibration_data.shape[0]
 
     # Check if wanda is requested
-    require_forward = args.prune_metric in ["wanda"]
+    require_forward = pruning_metric in ["wanda"]
 
     # Prepare metric stats
     metric_stats = []
@@ -209,7 +211,7 @@ def prune_vit(args, model, calibration_data):
         for name in subset:
             # For the wanda pruning, multiply the scaler row (normalized layer input) with the metric (weight value).
             # Otherwise, for magnitude pruning, just the magnitude of the weights is used
-            if args.prune_metric == "wanda":
+            if pruning_metric == "wanda":
                 # Update pruning metric stats
                 metric_stats[block_id][name] *= torch.sqrt(
                     wrapped_layers[name].scaler_row.reshape((1, -1))
@@ -220,7 +222,7 @@ def prune_vit(args, model, calibration_data):
 
             # Compute pruning mask
             w_mask = compute_mask(
-                metric_stats[block_id][name], args.prune_granularity, args.sparsity
+                metric_stats[block_id][name], pruning_granularity, sparsity
             )
 
             # Free metric memory
