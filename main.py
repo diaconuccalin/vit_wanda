@@ -128,15 +128,17 @@ def main():
 
     # Load model weights
     checkpoint = torch.load(args.resume, map_location="cpu")
-    if "model" in checkpoint:
-        model.load_state_dict(checkpoint["model"])
-    else:
-        model.load_state_dict(checkpoint)
 
     # Iterate through given options
     for pruning_metric in args.prune_metrics:
         for pruning_granularity in args.prune_granularities:
             for sparsity in args.sparsities:
+                # Reload model weights for each setup
+                if "model" in checkpoint:
+                    model.load_state_dict(checkpoint["model"])
+                else:
+                    model.load_state_dict(checkpoint)
+
                 # Prune model
                 if sparsity != 0:
                     with torch.no_grad():
