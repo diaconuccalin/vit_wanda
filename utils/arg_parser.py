@@ -230,9 +230,16 @@ def get_args():
     parser.add_argument(
         "--device", default="cuda", help="device to use for training / testing"
     )
+
     parser.add_argument("--seed", default=42, type=int)
 
-    parser.add_argument("--resume", default="", help="resume from checkpoint")
+    parser.add_argument(
+        "--checkpoint",
+        "--resume",
+        default="",
+        help="Path to checkpoint to resume from.",
+    )
+
     parser.add_argument(
         "--pin_mem",
         type=str2bool,

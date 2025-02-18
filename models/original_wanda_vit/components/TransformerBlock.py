@@ -1,10 +1,10 @@
 from timm.layers import DropPath
 from torch import nn
 
-from models.original_wanda.components.MultiHeadSelfAttentionWithProjectionAndDropout import (
+from models.original_wanda_vit.components.MultiHeadSelfAttentionWithProjectionAndDropout import (
     MultiHeadSelfAttentionWithProjectionAndDropout,
 )
-from models.original_wanda.components.PositionWiseFeedForwardWithDropout import (
+from models.original_wanda_vit.components.PositionWiseFeedForwardWithDropout import (
     PositionWiseFeedForwardWithDropout,
 )
 

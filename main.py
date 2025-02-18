@@ -127,7 +127,7 @@ def main():
     print("Number of model parameters:", n_parameters, "\n")
 
     # Load model weights
-    checkpoint = torch.load(args.resume, map_location="cpu")
+    checkpoint = torch.load(args.checkpoint, map_location="cpu")
 
     # Iterate through given options
     for pruning_metric in args.prune_metrics:
@@ -166,6 +166,7 @@ def main():
                 # Write results to file
                 with open(args.model + "_pruning_results.txt", "a") as f:
                     f.write(
+                        f"Model: {args.model}, "
                         f"Pruning metric: {pruning_metric}, "
                         f"Pruning granularity: {pruning_granularity}, "
                         f"Sparsity: {sparsity}, "

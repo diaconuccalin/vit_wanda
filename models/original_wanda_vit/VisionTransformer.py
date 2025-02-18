@@ -2,9 +2,9 @@ import torch
 import torch.nn as nn
 from timm.models.layers import trunc_normal_
 
-from models.original_wanda.components.PatchEmbedding import PatchEmbedding
-from models.original_wanda.components.TransformerBlock import TransformerBlock
-from models.original_wanda.utils import init_weights
+from models.original_wanda_vit.components.PatchEmbedding import PatchEmbedding
+from models.original_wanda_vit.components.TransformerBlock import TransformerBlock
+from models.original_wanda_vit.utils import init_weights
 
 
 class VisionTransformer(nn.Module):
