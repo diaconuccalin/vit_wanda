@@ -221,7 +221,7 @@ def train_one_epoch(
             wandb_logger._wandb.log({"Rank-0 Batch Wise/global_train_step": it})
 
     # Gather stats from all processes and print them
-    metric_logger.synchronize_between_processes()
+    metric_logger.synchronize_between_processes(device)
     print("Averaged stats:", metric_logger)
 
     return {k: meter.global_avg for k, meter in metric_logger.meters.items()}

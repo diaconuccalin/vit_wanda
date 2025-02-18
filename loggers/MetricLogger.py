@@ -43,9 +43,9 @@ class MetricLogger(object):
 
         return self.delimiter.join(loss_str)
 
-    def synchronize_between_processes(self):
+    def synchronize_between_processes(self, device):
         for meter in self.meters.values():
-            meter.synchronize_between_processes()
+            meter.synchronize_between_processes(device)
 
     def add_meter(self, name, meter):
         self.meters[name] = meter

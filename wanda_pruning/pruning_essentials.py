@@ -76,7 +76,7 @@ def check_sparsity(model):
     return float(zero_cnt) / fc_params
 
 
-def compute_mask(w_metric, prune_granularity, sparsity):
+def compute_mask(w_metric, prune_granularity, sparsity, device):
     """
     Function to compute a pruning mask based on a given metric.
 
@@ -91,7 +91,7 @@ def compute_mask(w_metric, prune_granularity, sparsity):
     # Compute mask layer-wise
     if prune_granularity == "layer":
         # Find threshold based on required sparsity
-        thresh = torch.sort(w_metric.flatten().cuda())[0][
+        thresh = torch.sort(w_metric.flatten().to(device))[0][
             int(w_metric.numel() * sparsity)
         ].cpu()
 
@@ -117,7 +117,9 @@ def compute_mask(w_metric, prune_granularity, sparsity):
         return w_mask
 
 
-def prune_vit(model, calibration_data, pruning_metric, pruning_granularity, sparsity):
+def prune_vit(
+    model, calibration_data, pruning_metric, pruning_granularity, sparsity, device
+):
     """
     Function to perform pruning on a Vision Transformer model.
 
@@ -227,7 +229,7 @@ def prune_vit(model, calibration_data, pruning_metric, pruning_granularity, spar
 
             # Compute pruning mask
             w_mask = compute_mask(
-                metric_stats[block_id][name], pruning_granularity, sparsity
+                metric_stats[block_id][name], pruning_granularity, sparsity, device
             )
 
             # Free metric memory

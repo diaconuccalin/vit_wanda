@@ -118,7 +118,7 @@ def main():
         else:
             raise ValueError(f"Model {args.model} not supported.")
 
-    model.cuda()
+    model.to(device)
 
     n_parameters = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print("Number of model parameters:", n_parameters, "\n")
@@ -145,6 +145,7 @@ def main():
                             pruning_metric=pruning_metric,
                             pruning_granularity=pruning_granularity,
                             sparsity=sparsity,
+                            device=device,
                         )
 
                 # Check sparsity
