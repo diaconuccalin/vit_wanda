@@ -170,6 +170,7 @@ def main():
             checked = True
 
     # Plot and save histograms
+    file_number = 0
     for module, hist in input_hists.items():
         # Get histogram values
         hist, bins = hist
@@ -181,8 +182,11 @@ def main():
 
         # Plot histogram
         plt.clf()
-        plt.bar(x=bins, height=hist, width=0.02)
-        plt.show()
+        plt.bar(x=bins, height=hist, width=0.04)
+        plt.title(str(type(module)) + " INPUT")
+
+        plt.savefig("hist_" + str(file_number) + ".png")
+        file_number += 1
 
     for module, hist in output_hists.items():
         # Get histogram values
@@ -195,9 +199,11 @@ def main():
 
         # Plot histogram
         plt.clf()
-        plt.bar(x=bins, height=hist, width=0.4)
+        plt.bar(x=bins, height=hist, width=0.06)
         plt.title(str(type(module)) + " OUTPUT")
-        plt.show()
+
+        plt.savefig("hist_" + str(file_number) + ".png")
+        file_number += 1
 
     return None
 
