@@ -147,11 +147,7 @@ def main():
 
     # Iterate through samples
     checked = False
-    it = 0
     for batch in tqdm(data_loader_val, desc="Analyzing activation sparsity"):
-        it += 1
-        if it == 50:
-            break
         # Get batch and put on device
         images = batch[0]
         images = images.to(device, non_blocking=True)
