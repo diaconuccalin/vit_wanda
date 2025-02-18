@@ -9,7 +9,7 @@ from tqdm import tqdm
 from datasets import build_dataset
 from evaluation.evaluation_pipeline import evaluate
 from models.model_utils import build_model
-from models.tiny_vit.tiny_vit import TinyViT
+from models.tiny_vit.tiny_vit_factory import tiny_vit_5m, tiny_vit_11m, tiny_vit_21m
 from utils.arg_parser import get_args
 from wanda_pruning.pruning_essentials import prune_vit, check_sparsity
 
@@ -21,8 +21,12 @@ def main():
     # At most one of dropout and stochastic depth should be enabled.
     assert args.dropout == 0 or args.drop_path == 0
 
-    # Set up device
-    device = torch.device(args.device)
+    # Select the last GPU if available
+    device = torch.device(
+        "cuda:" + str(torch.cuda.device_count() - 1)
+        if torch.cuda.is_available()
+        else "cpu"
+    )
 
     # Fix the seed for reproducibility
     seed = args.seed
@@ -105,22 +109,15 @@ def main():
     if "tiny" not in args.model:
         model = build_model(args, pretrained=False)
     else:
-        model = TinyViT(
-            img_size=224,
-            in_chans=3,
-            num_classes=1000,
-            embed_dims=[64, 128, 160, 320],
-            depths=[2, 2, 6, 2],
-            num_heads=[2, 4, 5, 10],
-            window_sizes=[7, 7, 14, 7],
-            mlp_ratio=4.0,
-            drop_rate=0.0,
-            drop_path_rate=0.0,
-            use_checkpoint=False,
-            mbconv_expand_ratio=4.0,
-            local_conv_size=3,
-            layer_lr_decay=0.8,
-        )
+        if "5m" in args.model.lower():
+            model = tiny_vit_5m()
+        elif "11m" in args.model.lower():
+            model = tiny_vit_11m()
+        elif "21m" in args.model.lower():
+            model = tiny_vit_21m()
+        else:
+            raise ValueError(f"Model {args.model} not supported.")
+
     model.cuda()
 
     n_parameters = sum(p.numel() for p in model.parameters() if p.requires_grad)

@@ -98,10 +98,7 @@ def main():
 
     # Build model
     print("Preparing model...")
-    if args.model.lower() == "tiny_vit_5m":
-        model = tiny_vit_5m()
-        activations_of_interest = TINY_VIT_5M_ACTIVATIONS_OF_INTEREST
-    elif args.model.lower() == "vit_base_patch16_224":
+    if args.model.lower() == "vit_base_patch16_224":
         model = build_model(
             args=argparse.Namespace(
                 model="vit_base_patch16_224",
@@ -111,6 +108,12 @@ def main():
             )
         )
         activations_of_interest = VIT_B_ACTIVATIONS_OF_INTEREST
+    elif "tiny_vit" in args.model.lower():
+        if "5m" in args.model.lower():
+            model = tiny_vit_5m()
+            activations_of_interest = TINY_VIT_5M_ACTIVATIONS_OF_INTEREST
+        else:
+            raise ValueError(f"Model {args.model} not supported.")
     else:
         raise ValueError(f"Model {args.model} not supported.")
     model.to(device)
@@ -192,7 +195,7 @@ def main():
 
         # Plot histogram
         plt.clf()
-        plt.bar(x=bins, height=hist, width=0.02)
+        plt.bar(x=bins, height=hist, width=0.4)
         plt.title(str(type(module)) + " OUTPUT")
         plt.show()
 
