@@ -15,9 +15,9 @@ def evaluate_glue(model_object, tasks=None, samples_per_task=None, seed=42):
         tasks = [
             "cola",
             "mnli",
-            "mrpc",
+            # "mrpc",
             "qnli",
-            "qqp",
+            # "qqp",
             "rte",
             "stsb",
             "wnli",
@@ -116,9 +116,14 @@ def evaluate_glue(model_object, tasks=None, samples_per_task=None, seed=42):
 
             if results:
                 metrics = metric.compute(
-                    predictions=np.array(results), references=np.array(labels)
+                    predictions=np.array(results),
+                    references=np.array(labels),
                 )
-                task_results[split] = {"metrics": metrics, "num_samples": len(results)}
+
+                task_results[split] = {
+                    "metrics": metrics,
+                    "num_samples": len(results),
+                }
             else:
                 task_results[split] = {
                     "metrics": "Failed to process any examples",
