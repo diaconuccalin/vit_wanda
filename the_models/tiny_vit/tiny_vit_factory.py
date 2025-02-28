@@ -1,4 +1,4 @@
-from models.tiny_vit.tiny_vit import TinyViT
+from the_models.tiny_vit.tiny_vit import TinyViT
 
 
 def tiny_vit_5m(**kwargs):

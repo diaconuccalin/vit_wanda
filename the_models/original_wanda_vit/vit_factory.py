@@ -3,7 +3,7 @@ from functools import partial
 import torch.nn as nn
 from timm.models.registry import register_model
 
-from models.original_wanda_vit.VisionTransformer import VisionTransformer
+from the_models.original_wanda_vit.VisionTransformer import VisionTransformer
 
 
 @register_model

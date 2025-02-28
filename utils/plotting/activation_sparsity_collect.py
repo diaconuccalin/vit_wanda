@@ -3,7 +3,7 @@ import os
 import torch
 from tqdm import tqdm
 
-from models.tiny_vit.tiny_vit_constants import TINY_VIT_5M_ACTIVATIONS_OF_INTEREST
+from the_models.tiny_vit.tiny_vit_constants import TINY_VIT_5M_ACTIVATIONS_OF_INTEREST
 
 
 def main():

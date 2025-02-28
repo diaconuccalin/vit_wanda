@@ -2,8 +2,8 @@ import torch
 import torch.nn as nn
 from tqdm import tqdm
 
-from models.tiny_vit.tiny_vit import TinyViT
 from pruning.wanda.WrappedLayer import WrappedLayer
+from the_models.tiny_vit.tiny_vit import TinyViT
 
 
 def find_layers(module, layers=None, name=""):

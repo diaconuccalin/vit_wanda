@@ -6,11 +6,13 @@ import torch
 from matplotlib import pyplot as plt
 from tqdm import tqdm
 
-from data.datasets import build_dataset
-from models.model_utils import build_model
-from models.original_wanda_vit.wanda_vit_constants import VIT_B_ACTIVATIONS_OF_INTEREST
-from models.tiny_vit.tiny_vit_constants import TINY_VIT_5M_ACTIVATIONS_OF_INTEREST
-from models.tiny_vit.tiny_vit_factory import tiny_vit_5m
+from the_datasets.datasets import build_dataset
+from the_models.model_utils import build_model
+from the_models.original_wanda_vit.wanda_vit_constants import (
+    VIT_B_ACTIVATIONS_OF_INTEREST,
+)
+from the_models.tiny_vit.tiny_vit_constants import TINY_VIT_5M_ACTIVATIONS_OF_INTEREST
+from the_models.tiny_vit.tiny_vit_factory import tiny_vit_5m
 from utils.arg_parser import get_args
 
 input_hists = dict()

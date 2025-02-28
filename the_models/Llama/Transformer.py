@@ -2,10 +2,10 @@ import torch
 from torch import nn
 from torch.nn import Embedding
 
-from models.Llama import ModelArgs
-from models.Llama.RMSNorm import RMSNorm
-from models.Llama.TransformerBlock import TransformerBlock
-from models.Llama.utils import precompute_freqs_cis
+from the_models.Llama import ModelArgs
+from the_models.Llama.RMSNorm import RMSNorm
+from the_models.Llama.TransformerBlock import TransformerBlock
+from the_models.Llama.utils import precompute_freqs_cis
 
 
 class Transformer(nn.Module):

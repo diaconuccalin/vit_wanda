@@ -5,8 +5,8 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 
-from models.Llama import ModelArgs
-from models.Llama.utils import apply_rotary_emb, repeat_kv
+from the_models.Llama import ModelArgs
+from the_models.Llama.utils import apply_rotary_emb, repeat_kv
 
 
 class Attention(nn.Module):

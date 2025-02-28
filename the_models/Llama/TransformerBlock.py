@@ -3,10 +3,10 @@ from typing import Optional
 import torch
 from torch import nn
 
-from models.Llama import ModelArgs
-from models.Llama.Attention import Attention
-from models.Llama.FeedForward import FeedForward
-from models.Llama.RMSNorm import RMSNorm
+from the_models.Llama import ModelArgs
+from the_models.Llama.Attention import Attention
+from the_models.Llama.FeedForward import FeedForward
+from the_models.Llama.RMSNorm import RMSNorm
 
 
 class TransformerBlock(nn.Module):

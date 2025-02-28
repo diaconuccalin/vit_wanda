@@ -1,6 +1,6 @@
 from typing import List, TypedDict
 
-from models.Llama.Message import Message
+from the_models.Llama.Message import Message
 
 
 class ChatPrediction(TypedDict, total=False):

@@ -1,7 +1,7 @@
 from typing import List
 
-from models.Llama.Message import Message, Dialog
-from models.Llama.Tokenizer import Tokenizer
+from the_models.Llama.Message import Message, Dialog
+from the_models.Llama.Tokenizer import Tokenizer
 
 
 class ChatFormat:

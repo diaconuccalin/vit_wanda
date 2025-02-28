@@ -1,6 +1,6 @@
 import os
 
-from models.Llama.Llama import Llama
+from the_models.Llama.Llama import Llama
 
 
 def llama_3_2_1b(root, **kwargs):

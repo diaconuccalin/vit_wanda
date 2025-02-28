@@ -7,14 +7,14 @@ from typing import List, Optional, Tuple
 import torch
 import torch.nn.functional as F
 
-from models.Llama.ChatFormat import ChatFormat
-from models.Llama.ChatPrediction import ChatPrediction
-from models.Llama.CompletionPrediction import CompletionPrediction
-from models.Llama.Message import Dialog
-from models.Llama.ModelArgs import ModelArgs
-from models.Llama.Tokenizer import Tokenizer
-from models.Llama.Transformer import Transformer
-from models.Llama.utils import sample_top_p
+from the_models.Llama.ChatFormat import ChatFormat
+from the_models.Llama.ChatPrediction import ChatPrediction
+from the_models.Llama.CompletionPrediction import CompletionPrediction
+from the_models.Llama.Message import Dialog
+from the_models.Llama.ModelArgs import ModelArgs
+from the_models.Llama.Tokenizer import Tokenizer
+from the_models.Llama.Transformer import Transformer
+from the_models.Llama.utils import sample_top_p
 
 
 class Llama:
