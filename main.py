@@ -6,7 +6,7 @@ import torch
 import torch.backends.cudnn as cudnn
 from tqdm import tqdm
 
-from datasets import build_dataset
+from data.datasets import build_dataset
 from evaluation.evaluation_pipeline import evaluate
 from models.model_utils import build_model
 from models.tiny_vit.tiny_vit_factory import tiny_vit_5m, tiny_vit_11m, tiny_vit_21m

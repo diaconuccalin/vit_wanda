@@ -6,7 +6,7 @@ import numpy as np
 import torch
 from tqdm import tqdm
 
-from datasets import build_dataset
+from data.datasets import build_dataset
 from models.model_utils import build_model
 from models.original_wanda_vit.wanda_vit_constants import VIT_B_ACTIVATIONS_OF_INTEREST
 from models.tiny_vit.tiny_vit_constants import TINY_VIT_5M_ACTIVATIONS_OF_INTEREST
